@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vinted Plus</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <div class="header">
+        <div class="header-top">
+            <h2>Vinted Plus</h2>
+            <span class="item-count-badge" id="item-count">—</span>
+        </div>
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="tab-products" id="tab-btn-products">
+                <!-- icon: grid -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+                <span id="tab-label-products">Termékek</span>
+            </div>
+            <div class="nav-tab" data-tab="tab-profit" id="tab-btn-profit">
+                <!-- icon: trending up -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px;margin-right:4px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                <span id="tab-label-profit">Profit</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS TAB -->
+    <div id="tab-products" class="tab-content active">
+        <div class="filter-bar">
+            <div class="search-wrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" class="search-input" id="search-input" placeholder="Search...">
+            </div>
+            <select class="filter-select" id="filter-select">
+                <option value="all">All</option>
+                <option value="active">Active</option>
+                <option value="sold">Sold</option>
+                <option value="draft">Draft</option>
+            </select>
+        </div>
+        <div class="sort-bar">
+            <span class="sort-label" id="sort-label">Sort:</span>
+            <button class="sort-btn active" data-sort="default" id="sort-default">Default</button>
+            <button class="sort-btn" data-sort="price-asc" id="sort-price-asc">Price ↑</button>
+            <button class="sort-btn" data-sort="price-desc" id="sort-price-desc">Price ↓</button>
+        </div>
+        <div id="product-list" class="product-list">
+            <div class="loading">Loading products...<br><small>(Open your own profile!)</small></div>
+        </div>
+    </div>
+
+    <!-- PROFIT TAB -->
+    <div id="tab-profit" class="tab-content">
+        <div id="profit-container">
+            <div class="loading">Calculating profit...</div>
+        </div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

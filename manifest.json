@@ -1,0 +1,39 @@
+{
+  "manifest_version": 3,
+  "name": "Vinted Plus",
+  "version": "2.0.0",
+  "description": "Relist your Vinted items quickly.",
+  "permissions": [
+    "storage",
+    "scripting",
+    "activeTab"
+  ],
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icon.png",
+    "default_title": "Vinted Plus"
+  },
+  "host_permissions": [
+    "https://www.vinted.hu/*",
+    "https://www.vinted.com/*",
+    "https://*.vinted.net/*",
+    "https://*.vinted.pl/*",
+    "https://*.vinted.cz/*",
+    "https://*.vinted.sk/*",
+    "https://*.vinted.co.uk/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.vinted.hu/*", "https://www.vinted.com/*", "https://*.vinted.net/*"],
+      "js": ["content.js"]
+    }
+  ]
+}
