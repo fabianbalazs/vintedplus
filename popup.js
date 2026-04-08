@@ -80,7 +80,7 @@ function applyLabels(isHu) {
 
     if (isHu) {
         el('tab-label-products').textContent = 'Termékek';
-        el('tab-label-profit').textContent = 'Profit';
+        el('tab-label-profit').textContent = 'Statisztika';
         el('search-input').placeholder = 'Keresés...';
         el('filter-select').options[0].text = 'Mind';
         el('filter-select').options[1].text = 'Aktív';
@@ -236,52 +236,86 @@ function renderItems(items, isHu) {
     });
 }
 
-// ── PROFIT ───────────────────────────────────────────────────────────
+// ── PROFIT / STATISZTIKA ─────────────────────────────────────────────
 function calculateAndRenderProfit(items, isHu) {
     const container = document.getElementById('profit-container');
-    const soldItems = items.filter(item => item.isSold);
-    const activeItems = items.filter(item => !item.isSold && !item.isDraft);
     const draftItems = items.filter(item => item.isDraft);
+    const activeItems = items.filter(item => !item.isSold && !item.isDraft);
 
     let total = 0;
+    let totalViewsCount = 0;
+    let totalFavsCount = 0;
     let currency = "";
 
-    soldItems.forEach(item => {
-        let rawPrice = item.price.replace(/[^\d.,]/g, "").replace(",", ".");
+    // Segédfüggvények a számok kinyeréséhez
+    const getNum = (str) => {
+        if (!str) return 0;
+        const num = parseInt(str.replace(/[^\d]/g, ''));
+        return isNaN(num) ? 0 : num;
+    };
+
+    activeItems.forEach(item => {
+        // Ár számítás
+        let rawPrice = item.price ? item.price.replace(/[^\d.,]/g, "").replace(",", ".") : "0";
         let val = parseFloat(rawPrice);
         if (!isNaN(val)) total += val;
         if (!currency && item.price) currency = item.price.replace(/[\d.,\s]/g, "").trim();
+
+        // Megtekintések és Kedvelések összesítése
+        totalViewsCount += getNum(item.date);
+        totalFavsCount += getNum(item.favorites);
     });
 
-    // Avg price
-    const avg = soldItems.length > 0 ? (total / soldItems.length) : 0;
+    const avg = activeItems.length > 0 ? (total / activeItems.length) : 0;
     const avgStr = avg.toLocaleString(undefined, { maximumFractionDigits: 0 }) + (currency ? ' ' + currency : '');
     const totalStr = total.toLocaleString(undefined, { maximumFractionDigits: 0 }) + (currency ? ' ' + currency : '');
 
     const lbl = {
-        revenue: isHu ? 'Összes Bevétel' : 'Total Revenue',
-        sold: isHu ? 'eladott' : 'sold',
+        revenue: isHu ? 'Termékek értéke' : 'Total Value',
+        activeCountLbl: isHu ? 'Aktív' : 'Active',
         avg: isHu ? 'Átlag ár' : 'Avg. price',
         active: isHu ? 'Aktív' : 'Active',
         drafts: isHu ? 'Tervezet' : 'Drafts',
-        breakdown: isHu ? 'Eladott termékek' : 'Sold items',
-        noSold: isHu ? 'Nincs eladott termék.' : 'No sold items yet.',
+        breakdown: isHu ? 'Aktív termékek' : 'Active items',
+        noActive: isHu ? 'Nincs aktív termék.' : 'No active items.',
+        totalViews: isHu ? 'Összmegtekintés' : 'Total Views',
+        totalFavs: isHu ? 'Összkedvelés' : 'Total Likes'
     };
 
-    let listHtml = soldItems.length === 0
-        ? `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">${lbl.noSold}</div>`
-        : soldItems.map((item, i) => `
+    activeItems.sort((a, b) => getNum(b.date) - getNum(a.date));
+
+    let listHtml = activeItems.length === 0
+        ? `<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px;">${lbl.noActive}</div>`
+        : activeItems.map((item, i) => {
+            let viewStr = item.date || (isHu ? '0 megtekintés' : '0 views');
+            return `
             <div class="profit-item">
                 <span class="p-idx">${i + 1}</span>
                 <span class="p-name" title="${item.title}">${item.title}</span>
-                <span class="p-price">${item.price}</span>
-            </div>`).join('');
+                <span class="p-price" style="color: var(--teal);">${viewStr}</span>
+            </div>`;
+        }).join('');
+
+    // Összesítő sor a lista alá
+    const summaryFooter = `
+        <div style="margin: 10px 14px 20px; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); display: flex; justify-content: space-around; text-align: center;">
+            <div>
+                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">${lbl.totalViews}</div>
+                <div style="font-size: 16px; font-weight: 700; color: var(--teal);">${totalViewsCount.toLocaleString()}</div>
+            </div>
+            <div style="width: 1px; background: var(--border);"></div>
+            <div>
+                <div style="font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; margin-bottom: 2px;">${lbl.totalFavs}</div>
+                <div style="font-size: 16px; font-weight: 700; color: #ff4444;">${totalFavsCount.toLocaleString()}</div>
+            </div>
+        </div>
+    `;
 
     container.innerHTML = `
         <div class="profit-header-card">
             <div class="profit-label">${lbl.revenue}</div>
             <div class="profit-amount">${totalStr}</div>
-            <div class="profit-count">${soldItems.length} ${lbl.sold}</div>
+            <div class="profit-count">${activeItems.length} ${lbl.activeCountLbl}</div>
         </div>
 
         <div class="profit-stats-row">
@@ -299,7 +333,8 @@ function calculateAndRenderProfit(items, isHu) {
             </div>
         </div>
 
-        ${soldItems.length > 0 ? `<div class="profit-section-title">${lbl.breakdown}</div>` : ''}
+        ${activeItems.length > 0 ? `<div class="profit-section-title">${lbl.breakdown}</div>` : ''}
         <div class="profit-list">${listHtml}</div>
+        ${activeItems.length > 0 ? summaryFooter : ''}
     `;
 }

@@ -1,18 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap');
 
 :root {
-    --teal: #007782;
-    --teal-dark: #005a63;
+    --teal: #048591;
+    --teal-dark: #03818d;
     --teal-glow: rgba(0, 119, 130, 0.15);
     --black: #0a0a0a;
-    --surface: #f7f8f8;
-    --card: #ffffff;
-    --border: #e8eaeb;
-    --text-primary: #0a0a0a;
-    --text-secondary: #6b7280;
+    --surface: #1a1a1a;
+    --card: #2d2d2d;
+    --border: #1d1d1d;
+    --text-primary: #ffffff;
+    --text-secondary: #f1f2f2;
     --text-muted: #9ca3af;
     --sold-green: #16a34a;
-    --sold-bg: #f0fdf4;
+    --sold-bg: #15241a;
     --draft-bg: #f9fafb;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
@@ -298,9 +298,9 @@ body {
 }
 
 .meta-chip.chip-fav {
-    background: #fff7ed;
-    color: #c2410c;
-    border-color: #fed7aa;
+    background: rgba(255, 0, 0, 0.1);
+    color: #ff0000;
+    border-color: rgba(255, 0, 0, 0.8);
 }
 
 .product-price-row {
