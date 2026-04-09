@@ -1,5 +1,4 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-    // Képek betöltése
     if (request.action === "downloadImage") {
         fetch(request.url)
             .then(response => response.blob())
@@ -16,7 +15,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         return true; 
     }
 
-    // Lap bezárása kérésre
     if (request.action === "closeTab") {
         if (sender.tab && sender.tab.id) {
             chrome.tabs.remove(sender.tab.id);
