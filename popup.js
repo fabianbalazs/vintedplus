@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const listContainer = document.getElementById('product-list');
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
-    // Detect language
     let isHu = false;
     try {
         const results = await chrome.scripting.executeScript({
@@ -14,10 +13,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     } catch (err) {}
 
-    // Apply language labels
     applyLabels(isHu);
 
-    // Init UI
     initTabs();
     initSearchAndFilter(isHu);
 
@@ -40,7 +37,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         return;
     }
 
-    // Show scanning indicator while scroll-scrape runs
     const scanMsg = isHu
         ? `Termékek betöltése...<br><small>Oldal szkennelése folyamatban</small>`
         : `Loading items...<br><small>Scanning page, please wait</small>`;
@@ -55,13 +51,12 @@ document.addEventListener('DOMContentLoaded', async () => {
 
             const items = response.items;
 
-            // Badge
+            
             const activeCount = items.filter(i => !i.isSold && !i.isDraft).length;
             document.getElementById('item-count').textContent = isHu
                 ? `${activeCount} aktív termék`
                 : `${activeCount} active products`;
 
-            // Store globally for filter/sort
             window._allItems = items;
             window._isHu = isHu;
 
@@ -73,7 +68,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// ── LANGUAGE LABELS ──────────────────────────────────────────────────
 function applyLabels(isHu) {
     const el = (id) => document.getElementById(id);
     if (!el('tab-label-products')) return;
@@ -93,7 +87,6 @@ function applyLabels(isHu) {
     }
 }
 
-// ── TABS ─────────────────────────────────────────────────────────────
 function initTabs() {
     const tabs = document.querySelectorAll('.nav-tab');
     const contents = document.querySelectorAll('.tab-content');
@@ -109,7 +102,6 @@ function initTabs() {
     });
 }
 
-// ── SEARCH, FILTER, SORT ─────────────────────────────────────────────
 function initSearchAndFilter(isHu) {
     const searchInput = document.getElementById('search-input');
     const filterSelect = document.getElementById('filter-select');
@@ -160,7 +152,6 @@ function extractPrice(priceStr) {
     return isNaN(num) ? 0 : num;
 }
 
-// ── RENDER ITEMS ─────────────────────────────────────────────────────
 function renderItems(items, isHu) {
     const listContainer = document.getElementById('product-list');
     listContainer.innerHTML = '';
@@ -178,7 +169,6 @@ function renderItems(items, isHu) {
         const div = document.createElement('div');
         div.className = item.isSold ? 'product-item item-sold' : 'product-item';
 
-        // Status chips
         let chips = '';
         if (item.isDraft) {
             chips = `<span class="meta-chip chip-draft">${isHu ? 'Tervezet' : 'Draft'}</span>`;
@@ -192,7 +182,6 @@ function renderItems(items, isHu) {
             }
         }
 
-        // Button
         let buttonHtml = '';
         if (item.isDraft) {
             buttonHtml = `<button class="relist-btn btn-post" data-action="post" data-url="${item.url}">${isHu ? '▶ PUBLIKÁLÁS' : '▶ POST'}</button>`;
@@ -219,7 +208,6 @@ function renderItems(items, isHu) {
         listContainer.appendChild(div);
     });
 
-    // Button listeners
     document.querySelectorAll('.relist-btn').forEach(btn => {
         btn.addEventListener('click', async (e) => {
             const url = e.target.getAttribute('data-url');
@@ -236,7 +224,6 @@ function renderItems(items, isHu) {
     });
 }
 
-// ── PROFIT / STATISZTIKA ─────────────────────────────────────────────
 function calculateAndRenderProfit(items, isHu) {
     const container = document.getElementById('profit-container');
     const draftItems = items.filter(item => item.isDraft);
@@ -247,7 +234,6 @@ function calculateAndRenderProfit(items, isHu) {
     let totalFavsCount = 0;
     let currency = "";
 
-    // Segédfüggvények a számok kinyeréséhez
     const getNum = (str) => {
         if (!str) return 0;
         const num = parseInt(str.replace(/[^\d]/g, ''));
@@ -255,13 +241,11 @@ function calculateAndRenderProfit(items, isHu) {
     };
 
     activeItems.forEach(item => {
-        // Ár számítás
         let rawPrice = item.price ? item.price.replace(/[^\d.,]/g, "").replace(",", ".") : "0";
         let val = parseFloat(rawPrice);
         if (!isNaN(val)) total += val;
         if (!currency && item.price) currency = item.price.replace(/[\d.,\s]/g, "").trim();
 
-        // Megtekintések és Kedvelések összesítése
         totalViewsCount += getNum(item.date);
         totalFavsCount += getNum(item.favorites);
     });
@@ -296,7 +280,6 @@ function calculateAndRenderProfit(items, isHu) {
             </div>`;
         }).join('');
 
-    // Összesítő sor a lista alá
     const summaryFooter = `
         <div style="margin: 10px 14px 20px; padding: 12px; background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); display: flex; justify-content: space-around; text-align: center;">
             <div>
