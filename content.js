@@ -1,4 +1,3 @@
-// content.js - FINAL VERSION (Draft Auto-Post + Success Modal)
 
 const CURRENT_DOMAIN = window.location.origin; 
 const UPLOAD_URL = `${CURRENT_DOMAIN}/items/new`; 
@@ -6,24 +5,21 @@ const STORAGE_KEY = "vinted_relist_data";
 const DELETE_TASK_KEY = "vinted_delete_task"; 
 const AUTOSTART_KEY = "vinted_autostart_url"; 
 const DRAFT_POST_KEY = "vinted_post_draft_url"; 
-const DRAFT_SUCCESS_KEY = "vinted_draft_success"; // Új kulcs a siker jelzéséhez
+const DRAFT_SUCCESS_KEY = "vinted_draft_success"; /
 
 console.log(`Vinted Reloader: Aktív.`);
 
 (function() {
     const currentUrl = window.location.href;
-    
-    // 1. Feltöltő oldal (Relist)
+   
     if (currentUrl.includes("/items/new") || currentUrl.includes("/upload")) {
         initUploadPage();
     } 
-    // 2. Minden más oldal (Profil, Termék, Szerkesztés)
     else {
         checkStartConditions(); 
     }
 })();
 
-// KOMMUNIKÁCIÓ
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "GET_ITEMS") {
         scrollAndScrape().then(items => sendResponse({ items }));
@@ -93,7 +89,6 @@ function scrapeGridItems() {
             let isSold = false;
             let isDraft = false;
 
-            // STÁTUSZOK
             const soldMatch = rawText.find(line => line.toLowerCase() === 'eladva' || line.toLowerCase() === 'sold');
             if (soldMatch) { isSold = true; favorites = isHu ? "Eladva" : "Sold"; }
 
@@ -103,17 +98,14 @@ function scrapeGridItems() {
                 favorites = isHu ? "Tervezet" : "Draft"; 
             }
 
-            // Ár
             const priceRegex = /(HUF|Ft|€|\$|zł|£|PLN|kr)\s*[\d\s.,]+|[\d\s.,]+\s*(HUF|Ft|€|\$|zł|£|PLN|kr)/i;
             const priceMatch = rawText.find(line => priceRegex.test(line));
             if (priceMatch) price = priceMatch;
 
-            // Méret
             const sizeRegex = /^([XSMLXL]+|[\d\/\s]+|One size)$/i;
             const sizeMatch = rawText.find(line => line !== price && sizeRegex.test(line) && line.length < 15);
             if (sizeMatch) size = sizeMatch;
 
-            // Kedvencek (Csak ha nem draft és nem sold)
             if (!isSold && !isDraft) {
                 const favRegex = /(\d+)\s*(kedvenc|favourites|favorites)/i;
                 const favMatch = rawText.find(line => favRegex.test(line));
@@ -121,14 +113,12 @@ function scrapeGridItems() {
                 else favorites = isHu ? "0 kedvenc" : "0 favourites";
             }
 
-            // Márka
             const brandCandidates = rawText.filter(line => 
                 line !== price && line !== size && line !== favorites &&
                 !line.match(/kedvenc|favourites|eladva|sold|tervezet|draft|megtekintés|view|promoted|bump/i)
             );
             if (brandCandidates.length > 0) brand = brandCandidates[0];
 
-            // Megtekintés
             const viewMatch = rawText.find(line => line.match(/megtekintés|view/i));
             if (viewMatch) views = viewMatch;
 
@@ -154,27 +144,24 @@ function scrapeGridItems() {
     return items;
 }
 
-// INDÍTÁS
+
 async function checkStartConditions() {
     const currentUrl = window.location.href;
 
-    // A) SIKERES FELTÖLTÉS ÜZENET (EZ AZ ÚJ RÉSZ)
-    // Ha az oldal újratöltődött a feltöltés után, itt kapjuk el
+
     const successCheck = await chrome.storage.local.get(DRAFT_SUCCESS_KEY);
     if (successCheck[DRAFT_SUCCESS_KEY]) {
-        await chrome.storage.local.remove(DRAFT_SUCCESS_KEY); // Azonnal töröljük, hogy ne jöjjön elő újra
+        await chrome.storage.local.remove(DRAFT_SUCCESS_KEY); 
         showSuccessModal();
         return;
     }
 
-    // B) Terminátor mód
     const deleteTarget = await chrome.storage.local.get(DELETE_TASK_KEY);
     if (deleteTarget[DELETE_TASK_KEY] && currentUrl.includes(deleteTarget[DELETE_TASK_KEY])) {
         performAutoDelete();
         return;
     }
 
-    // C) Automata Relist
     const autostart = await chrome.storage.local.get(AUTOSTART_KEY);
     if (autostart[AUTOSTART_KEY] && currentUrl.includes(autostart[AUTOSTART_KEY])) {
         await chrome.storage.local.remove(AUTOSTART_KEY);
@@ -193,7 +180,6 @@ async function checkStartConditions() {
     }
 }
 
-// --- ÚJ: SIKERES FELTÖLTÉS MODAL ---
 function showSuccessModal() {
     const isHu = document.documentElement.lang.startsWith('hu');
 
@@ -204,7 +190,6 @@ function showSuccessModal() {
 
     const FONT = "'DM Sans', 'Montserrat', sans-serif";
 
-    // Inject keyframes once (shared with delete modal)
     if (!document.getElementById('vp-modal-style')) {
         const style = document.createElement('style');
         style.id = 'vp-modal-style';
@@ -281,7 +266,6 @@ function showSuccessModal() {
     document.body.appendChild(overlay);
 }
 
-// --- DRAFT AUTOMATA KLIKKELÉS ---
 async function handleDraftPost() {
     const toast = document.createElement('div');
     toast.innerText = "⏳ Publikálás...";
@@ -299,8 +283,7 @@ async function handleDraftPost() {
     if (submitBtn) {
         toast.innerText = "✅ Feltöltés!";
         
-        // --- ITT A LÉNYEG: Beállítjuk a sikeres jelet mielőtt kattintunk ---
-        // Mert a kattintás után az oldal újratöltődik/továbbugrik
+
         await chrome.storage.local.set({ [DRAFT_SUCCESS_KEY]: true });
         
         submitBtn.click();
@@ -316,7 +299,6 @@ async function handleDraftPost() {
     }
 }
 
-// ... STANDARD RELIST FÜGGVÉNYEK ...
 
 async function handleScrape() {
     const isHu = document.documentElement.lang.startsWith('hu');
@@ -461,7 +443,6 @@ function showDeleteConfirmation(originalUrl) {
         animation: vpFadeIn 0.15s ease;
     `;
 
-    // Inject keyframes once
     if (!document.getElementById('vp-modal-style')) {
         const style = document.createElement('style');
         style.id = 'vp-modal-style';
@@ -486,18 +467,15 @@ function showDeleteConfirmation(originalUrl) {
         animation: vpSlideUp 0.2s ease;
     `;
 
-    // Top accent bar
     const accent = document.createElement('div');
     accent.style.cssText = `
         height: 4px;
         background: linear-gradient(90deg, #007782, #00a8b5);
     `;
 
-    // Body
     const body = document.createElement('div');
     body.style.cssText = `padding: 28px 28px 24px;`;
 
-    // Icon + title row
     const titleRow = document.createElement('div');
     titleRow.style.cssText = `display: flex; align-items: center; gap: 10px; margin-bottom: 14px;`;
 
@@ -523,7 +501,6 @@ function showDeleteConfirmation(originalUrl) {
         margin: 0 0 24px; padding: 0;
     `;
 
-    // Buttons
     const btnRow = document.createElement('div');
     btnRow.style.cssText = `display: flex; gap: 10px;`;
 
