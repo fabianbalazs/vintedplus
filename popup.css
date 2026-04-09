@@ -36,7 +36,6 @@ body {
     overflow: hidden;
 }
 
-/* ── HEADER ── */
 .header {
     background: var(--black);
     padding: 14px 16px 0;
@@ -83,7 +82,6 @@ body {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* ── TABS ── */
 .nav-tabs {
     display: flex;
     gap: 0;
@@ -114,7 +112,6 @@ body {
     color: rgba(255,255,255,0.7);
 }
 
-/* ── TAB CONTENT ── */
 .tab-content {
     display: none;
     height: 468px;
@@ -131,7 +128,6 @@ body {
 .tab-content::-webkit-scrollbar-track { background: transparent; }
 .tab-content::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 2px; }
 
-/* ── SEARCH / FILTER BAR ── */
 .filter-bar {
     padding: 10px 14px 0;
     display: flex;
@@ -198,7 +194,6 @@ body {
     padding: 10px 14px 14px;
 }
 
-/* ── PRODUCT ITEM ── */
 .product-item {
     background: var(--card);
     border-radius: var(--radius);
@@ -228,7 +223,6 @@ body {
     padding-bottom: 12px;
 }
 
-/* ── IMAGE ── */
 .image-container {
     width: 72px;
     height: 72px;
@@ -246,7 +240,6 @@ body {
     display: block;
 }
 
-/* ── INFO ── */
 .product-info-col {
     flex: 1;
     min-width: 0;
@@ -316,7 +309,6 @@ body {
     font-family: 'DM Sans', sans-serif;
 }
 
-/* ── RELIST BUTTON ── */
 .relist-btn {
     display: block;
     width: calc(100% - 24px);
@@ -351,7 +343,6 @@ body {
     background: #2d2d2d;
 }
 
-/* ── LOADING / EMPTY STATE ── */
 .loading {
     text-align: center;
     color: var(--text-secondary);
@@ -371,7 +362,6 @@ body {
     color: var(--teal);
 }
 
-/* ── PROFIT TAB ── */
 .profit-header-card {
     margin: 14px;
     padding: 20px;
@@ -510,7 +500,6 @@ body {
     flex-shrink: 0;
 }
 
-/* ── SORT CONTROLS ── */
 .sort-bar {
     display: flex;
     align-items: center;
@@ -545,7 +534,6 @@ body {
     margin-right: 2px;
 }
 
-/* ── EMPTY STATE ILLUSTRATION ── */
 .empty-state {
     text-align: center;
     padding: 40px 20px;
