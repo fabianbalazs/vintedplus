@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Vinted Legit Check Local",
+  "version": "1.0.0",
+  "description": "Lokális eredetiség- és kockázatelemző Vinted termékekhez.",
+  "permissions": ["storage"],
+  "host_permissions": [
+    "https://*.vinted.hu/*",
+    "https://*.vinted.com/*",
+    "https://*.vinted.pl/*",
+    "https://generativelanguage.googleapis.com/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Legit Check Beállítások"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.vinted.hu/items/*",
+        "https://*.vinted.com/items/*",
+        "https://*.vinted.pl/items/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}
